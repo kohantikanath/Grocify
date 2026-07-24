@@ -7,11 +7,12 @@ import { QuantityStepper } from './QuantityStepper';
 
 type Props = {
   item: CartItem;
+  canAddMore: boolean;
   onIncrement: () => void;
   onDecrement: () => void;
 };
 
-export function CartItemCard({ item, onIncrement, onDecrement }: Props) {
+export function CartItemCard({ item, canAddMore, onIncrement, onDecrement }: Props) {
   const { product, quantity } = item;
   const lineTotal = product.price * quantity;
 
@@ -22,6 +23,7 @@ export function CartItemCard({ item, onIncrement, onDecrement }: Props) {
         <Text style={styles.title} numberOfLines={2}>
           {product.title}
         </Text>
+        <Text style={styles.stock}>{item.product.stock} in stock</Text>
         <Text style={styles.price}>{formatPrice(lineTotal)}</Text>
       </View>
       <QuantityStepper
@@ -29,6 +31,7 @@ export function CartItemCard({ item, onIncrement, onDecrement }: Props) {
         onIncrement={onIncrement}
         onDecrement={onDecrement}
         variant="cart"
+        canIncrement={canAddMore}
       />
     </View>
   );
@@ -60,6 +63,11 @@ const styles = StyleSheet.create({
     ...typography.bodySm,
     color: colors.onSurface,
     fontWeight: '600',
+  },
+  stock: {
+    ...typography.bodySm,
+    color: colors.onSurfaceVariant,
+    fontSize: 12,
   },
   price: {
     ...typography.priceDisplay,

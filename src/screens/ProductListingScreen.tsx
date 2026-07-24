@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ActivityIndicator,
@@ -20,6 +21,8 @@ type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ProductListing'>;
 };
 
+type GridItem = Product | null;
+
 const CART_BAR_HEIGHT = 100;
 
 export function ProductListingScreen({ navigation }: Props) {
@@ -29,9 +32,17 @@ export function ProductListingScreen({ navigation }: Props) {
     incrementItem,
     decrementItem,
     getQuantity,
+    canAddMore,
     itemCount,
     subtotal,
   } = useCart();
+
+  const gridData: GridItem[] = useMemo(() => {
+    if (products.length % 2 === 1) {
+      return [...products, null];
+    }
+    return products;
+  }, [products]);
 
   if (loading) {
     return (
@@ -52,7 +63,11 @@ export function ProductListingScreen({ navigation }: Props) {
     );
   }
 
-  const renderProduct = ({ item }: { item: Product }) => {
+  const renderProduct = ({ item }: { item: GridItem }) => {
+    if (!item) {
+      return <View style={styles.cardWrapper} />;
+    }
+
     const quantity = getQuantity(item.id);
 
     return (
@@ -60,6 +75,7 @@ export function ProductListingScreen({ navigation }: Props) {
         <ProductCard
           product={item}
           quantity={quantity}
+          canAddMore={canAddMore(item.id, item.stock)}
           onAdd={() => addToCart(item)}
           onIncrement={() => incrementItem(item.id)}
           onDecrement={() => decrementItem(item.id)}
@@ -71,8 +87,8 @@ export function ProductListingScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <FlatList
-        data={products}
-        keyExtractor={(item) => String(item.id)}
+        data={gridData}
+        keyExtractor={(item, index) => (item ? String(item.id) : `spacer-${index}`)}
         renderItem={renderProduct}
         numColumns={2}
         showsVerticalScrollIndicator={false}
@@ -123,7 +139,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: spacing.md,
-    gap: spacing.md,
   },
   row: {
     gap: spacing.md,

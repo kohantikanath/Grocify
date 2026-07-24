@@ -18,6 +18,7 @@ export function CartScreen() {
     isDeliveryFree,
     incrementItem,
     decrementItem,
+    canAddMore,
   } = useCart();
 
   if (items.length === 0) {
@@ -32,6 +33,7 @@ export function CartScreen() {
   const renderItem = ({ item }: { item: CartItem }) => (
     <CartItemCard
       item={item}
+      canAddMore={canAddMore(item.product.id, item.product.stock)}
       onIncrement={() => incrementItem(item.product.id)}
       onDecrement={() => decrementItem(item.product.id)}
     />

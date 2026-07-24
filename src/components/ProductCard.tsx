@@ -8,6 +8,7 @@ import { QuantityStepper } from './QuantityStepper';
 type Props = {
   product: Product;
   quantity: number;
+  canAddMore: boolean;
   onAdd: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
@@ -16,11 +17,13 @@ type Props = {
 export function ProductCard({
   product,
   quantity,
+  canAddMore,
   onAdd,
   onIncrement,
   onDecrement,
 }: Props) {
   const inCart = quantity > 0;
+  const outOfStock = product.stock < 1;
 
   return (
     <View style={[styles.card, inCart && styles.cardSelected]}>
@@ -29,6 +32,9 @@ export function ProductCard({
         <Text style={styles.title} numberOfLines={2}>
           {product.title}
         </Text>
+        <Text style={[styles.stock, outOfStock && styles.outOfStock]}>
+          {outOfStock ? 'Out of stock' : `${product.stock} in stock`}
+        </Text>
         <View style={styles.footer}>
           <Text style={styles.price}>{formatPrice(product.price)}</Text>
           {inCart ? (
@@ -36,9 +42,14 @@ export function ProductCard({
               quantity={quantity}
               onIncrement={onIncrement}
               onDecrement={onDecrement}
+              canIncrement={canAddMore}
             />
           ) : (
-            <Pressable style={styles.addButton} onPress={onAdd}>
+            <Pressable
+              style={[styles.addButton, outOfStock && styles.addButtonDisabled]}
+              onPress={outOfStock ? undefined : onAdd}
+              disabled={outOfStock}
+            >
               <Text style={styles.addButtonText}>+</Text>
             </Pressable>
           )}
@@ -69,17 +80,26 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.sm,
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   title: {
     ...typography.bodySm,
     color: colors.onSurface,
-    minHeight: 40,
+    minHeight: 36,
+  },
+  stock: {
+    ...typography.bodySm,
+    color: colors.onSurfaceVariant,
+    fontSize: 12,
+  },
+  outOfStock: {
+    color: colors.error,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: spacing.xs,
   },
   price: {
     ...typography.priceDisplay,
@@ -93,6 +113,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  addButtonDisabled: {
+    opacity: 0.35,
   },
   addButtonText: {
     ...typography.bodyLg,

@@ -18,6 +18,7 @@ interface CartContextValue {
   grandTotal: number;
   isDeliveryFree: boolean;
   getQuantity: (productId: number) => number;
+  canAddMore: (productId: number, stock: number) => boolean;
   addToCart: (product: Product) => void;
   incrementItem: (productId: number) => void;
   decrementItem: (productId: number) => void;
@@ -34,11 +35,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items],
   );
 
+  const canAddMore = useCallback(
+    (productId: number, stock: number) => getQuantity(productId) < stock,
+    [getQuantity],
+  );
+
   const addToCart = useCallback((product: Product) => {
+    if (product.stock < 1) return;
+
     setItems((current) => {
       const existing = current.find((item) => item.product.id === product.id);
 
       if (existing) {
+        if (existing.quantity >= product.stock) return current;
+
         return current.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -52,11 +62,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const incrementItem = useCallback((productId: number) => {
     setItems((current) =>
-      current.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
-      ),
+      current.map((item) => {
+        if (item.product.id !== productId) return item;
+        if (item.quantity >= item.product.stock) return item;
+        return { ...item, quantity: item.quantity + 1 };
+      }),
     );
   }, []);
 
@@ -90,6 +100,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       grandTotal,
       isDeliveryFree,
       getQuantity,
+      canAddMore,
       addToCart,
       incrementItem,
       decrementItem,
@@ -102,6 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       grandTotal,
       isDeliveryFree,
       getQuantity,
+      canAddMore,
       addToCart,
       incrementItem,
       decrementItem,

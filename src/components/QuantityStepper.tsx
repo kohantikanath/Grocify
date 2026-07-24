@@ -8,6 +8,7 @@ type Props = {
   onIncrement: () => void;
   onDecrement: () => void;
   variant?: 'product' | 'cart';
+  canIncrement?: boolean;
 };
 
 export function QuantityStepper({
@@ -15,12 +16,18 @@ export function QuantityStepper({
   onIncrement,
   onDecrement,
   variant = 'product',
+  canIncrement = true,
 }: Props) {
   const isCart = variant === 'cart';
 
   return (
     <View style={[styles.container, isCart && styles.cartContainer]}>
-      <Pressable style={styles.button} onPress={onIncrement} hitSlop={8}>
+      <Pressable
+        style={[styles.button, !canIncrement && styles.buttonDisabled]}
+        onPress={canIncrement ? onIncrement : undefined}
+        hitSlop={8}
+        disabled={!canIncrement}
+      >
         <Text style={[styles.buttonText, isCart && styles.cartButtonText]}>+</Text>
       </Pressable>
 
@@ -60,6 +67,9 @@ const styles = StyleSheet.create({
     minHeight: 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.35,
   },
   buttonText: {
     ...typography.bodyLg,

@@ -14,6 +14,7 @@ export function AppNavigator() {
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.primary,
         headerTitleStyle: { color: colors.onSurface },
+        headerTitleAlign: 'center',
         contentStyle: { backgroundColor: colors.background },
       }}
     >
