@@ -3,11 +3,15 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { CartItem, Product } from '../types';
+import { colors } from '../theme';
+import { loadCart, saveCart } from '../utils/cartStorage';
 import { getDeliveryFee, getGrandTotal, getItemCount, getSubtotal } from '../utils';
 
 interface CartContextValue {
@@ -28,6 +32,18 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    loadCart()
+      .then(setItems)
+      .finally(() => setIsReady(true));
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+    saveCart(items);
+  }, [items, isReady]);
 
   const getQuantity = useCallback(
     (productId: number) =>
@@ -120,6 +136,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     ],
   );
 
+  if (!isReady) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
@@ -132,3 +156,12 @@ export function useCart(): CartContextValue {
 
   return context;
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background,
+  },
+});
