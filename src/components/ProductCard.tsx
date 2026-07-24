@@ -24,20 +24,44 @@ export function ProductCard({
 }: Props) {
   const inCart = quantity > 0;
   const outOfStock = product.stock < 1;
+  const maxReached = inCart && !canAddMore && !outOfStock;
 
   return (
-    <View style={[styles.card, inCart && styles.cardSelected]}>
-      <Image source={{ uri: product.thumbnail }} style={styles.image} />
+    <View style={[styles.card, inCart && styles.cardSelected, outOfStock && styles.cardDisabled]}>
+      <View style={styles.imageWrap}>
+        <Image source={{ uri: product.thumbnail }} style={styles.image} />
+        {outOfStock && (
+          <View style={styles.soldOutOverlay}>
+            <Text style={styles.soldOutLabel}>No more left</Text>
+          </View>
+        )}
+      </View>
+
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>
           {product.title}
         </Text>
-        <Text style={[styles.stock, outOfStock && styles.outOfStock]}>
-          {outOfStock ? 'Out of stock' : `${product.stock} in stock`}
+
+        <Text
+          style={styles.price}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {formatPrice(product.price)}
         </Text>
-        <View style={styles.footer}>
-          <Text style={styles.price}>{formatPrice(product.price)}</Text>
-          {inCart ? (
+
+        {maxReached && (
+          <Text style={styles.maxNotice} numberOfLines={1}>
+            No more left
+          </Text>
+        )}
+
+        <View style={[styles.actions, (inCart || outOfStock) && styles.actionsFull]}>
+          {outOfStock ? (
+            <View style={styles.unavailableChip}>
+              <Text style={styles.unavailableText}>Unavailable</Text>
+            </View>
+          ) : inCart ? (
             <QuantityStepper
               quantity={quantity}
               onIncrement={onIncrement}
@@ -45,11 +69,7 @@ export function ProductCard({
               canIncrement={canAddMore}
             />
           ) : (
-            <Pressable
-              style={[styles.addButton, outOfStock && styles.addButtonDisabled]}
-              onPress={outOfStock ? undefined : onAdd}
-              disabled={outOfStock}
-            >
+            <Pressable style={styles.addButton} onPress={onAdd}>
               <Text style={styles.addButtonText}>+</Text>
             </Pressable>
           )}
@@ -73,10 +93,31 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderWidth: 2,
   },
+  cardDisabled: {
+    opacity: 0.85,
+  },
+  imageWrap: {
+    position: 'relative',
+  },
   image: {
     width: '100%',
     aspectRatio: 1,
     backgroundColor: colors.secondaryContainer,
+  },
+  soldOutOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  soldOutLabel: {
+    ...typography.labelCaps,
+    color: colors.onSurface,
+    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
+    overflow: 'hidden',
   },
   content: {
     padding: spacing.sm,
@@ -87,24 +128,24 @@ const styles = StyleSheet.create({
     color: colors.onSurface,
     minHeight: 36,
   },
-  stock: {
-    ...typography.bodySm,
-    color: colors.onSurfaceVariant,
-    fontSize: 12,
-  },
-  outOfStock: {
-    color: colors.error,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: spacing.xs,
-  },
   price: {
     ...typography.priceDisplay,
     color: colors.primary,
-    flex: 1,
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  maxNotice: {
+    ...typography.bodySm,
+    color: colors.error,
+    fontSize: 11,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: spacing.xs,
+  },
+  actionsFull: {
+    alignSelf: 'stretch',
   },
   addButton: {
     backgroundColor: colors.primary,
@@ -114,12 +155,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addButtonDisabled: {
-    opacity: 0.35,
-  },
   addButtonText: {
     ...typography.bodyLg,
     color: colors.onPrimary,
+    fontWeight: '600',
+  },
+  unavailableChip: {
+    backgroundColor: colors.secondaryContainer,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
+  },
+  unavailableText: {
+    ...typography.bodySm,
+    color: colors.onSurfaceVariant,
+    fontSize: 12,
     fontWeight: '600',
   },
 });

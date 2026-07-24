@@ -21,7 +21,7 @@ export function QuantityStepper({
   const isCart = variant === 'cart';
 
   return (
-    <View style={[styles.container, isCart && styles.cartContainer]}>
+    <View style={[styles.container, isCart ? styles.cartContainer : styles.productContainer]}>
       <Pressable
         style={[styles.button, !canIncrement && styles.buttonDisabled]}
         onPress={canIncrement ? onIncrement : undefined}
@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.md,
     gap: spacing.sm,
+  },
+  productContainer: {
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.sm,
   },
   button: {
     minWidth: 24,

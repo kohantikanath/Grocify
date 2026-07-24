@@ -23,8 +23,9 @@ export function CartItemCard({ item, canAddMore, onIncrement, onDecrement }: Pro
         <Text style={styles.title} numberOfLines={2}>
           {product.title}
         </Text>
-        <Text style={styles.stock}>{item.product.stock} in stock</Text>
-        <Text style={styles.price}>{formatPrice(lineTotal)}</Text>
+        <Text style={styles.price} numberOfLines={1} ellipsizeMode="tail">
+          {formatPrice(lineTotal)}
+        </Text>
       </View>
       <QuantityStepper
         quantity={quantity}
@@ -63,11 +64,6 @@ const styles = StyleSheet.create({
     ...typography.bodySm,
     color: colors.onSurface,
     fontWeight: '600',
-  },
-  stock: {
-    ...typography.bodySm,
-    color: colors.onSurfaceVariant,
-    fontSize: 12,
   },
   price: {
     ...typography.priceDisplay,
