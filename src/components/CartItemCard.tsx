@@ -15,6 +15,7 @@ type Props = {
 export function CartItemCard({ item, canAddMore, onIncrement, onDecrement }: Props) {
   const { product, quantity } = item;
   const lineTotal = product.price * quantity;
+  const maxReached = !canAddMore;
 
   return (
     <View style={styles.card}>
@@ -26,6 +27,11 @@ export function CartItemCard({ item, canAddMore, onIncrement, onDecrement }: Pro
         <Text style={styles.price} numberOfLines={1} ellipsizeMode="tail">
           {formatPrice(lineTotal)}
         </Text>
+        {maxReached && (
+          <Text style={styles.maxNotice} numberOfLines={1}>
+            No more left
+          </Text>
+        )}
       </View>
       <QuantityStepper
         quantity={quantity}
@@ -68,5 +74,10 @@ const styles = StyleSheet.create({
   price: {
     ...typography.priceDisplay,
     color: colors.primary,
+  },
+  maxNotice: {
+    ...typography.bodySm,
+    color: colors.error,
+    fontSize: 11,
   },
 });
