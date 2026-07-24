@@ -55,9 +55,8 @@ src/
 
 - **React Context for cart state** — keeps the cart alive across screen navigation without adding Redux or Zustand. For two screens this is simple and easy to explain.
 - **React Navigation (stack)** — file-based routing (Expo Router) was not needed for a 2-screen app; a stack navigator is enough.
-- **AsyncStorage for persistence** — saves the cart locally so items remain after closing the app. Not required by the brief, but a small addition that improves UX.
+- **AsyncStorage for persistence** — saves the cart locally so items remain after closing the app.
 - **Price rounding** — all money math uses `roundMoney()` so totals never show floating-point glitches like ₹149.99999999.
-- **With more time** — I would add pull-to-refresh on the listing, unit tests for price/cart logic, and sync cart stock limits against fresh API data on each app open.
 
 ## Tech Stack
 
