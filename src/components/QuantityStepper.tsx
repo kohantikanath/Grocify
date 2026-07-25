@@ -22,6 +22,16 @@ export function QuantityStepper({
 
   return (
     <View style={[styles.container, isCart ? styles.cartContainer : styles.productContainer]}>
+      <Pressable style={styles.button} onPress={onDecrement} hitSlop={8}>
+        {isCart && quantity === 1 ? (
+          <Ionicons name="trash-outline" size={16} color={colors.onSurfaceVariant} />
+        ) : (
+          <Text style={[styles.buttonText, isCart && styles.cartButtonText]}>−</Text>
+        )}
+      </Pressable>
+
+      <Text style={[styles.quantity, isCart && styles.cartQuantity]}>{quantity}</Text>
+
       <Pressable
         style={[styles.button, !canIncrement && styles.buttonDisabled]}
         onPress={canIncrement ? onIncrement : undefined}
@@ -29,16 +39,6 @@ export function QuantityStepper({
         disabled={!canIncrement}
       >
         <Text style={[styles.buttonText, isCart && styles.cartButtonText]}>+</Text>
-      </Pressable>
-
-      <Text style={[styles.quantity, isCart && styles.cartQuantity]}>{quantity}</Text>
-
-      <Pressable style={styles.button} onPress={onDecrement} hitSlop={8}>
-        {isCart && quantity === 1 ? (
-          <Ionicons name="trash-outline" size={16} color={colors.onSurfaceVariant} />
-        ) : (
-          <Text style={[styles.buttonText, isCart && styles.cartButtonText]}>−</Text>
-        )}
       </Pressable>
     </View>
   );
@@ -55,10 +55,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   cartContainer: {
-    flexDirection: 'column',
     backgroundColor: colors.secondaryContainer,
     paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs,
     borderRadius: radius.md,
     gap: spacing.sm,
   },
