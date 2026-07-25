@@ -2,6 +2,10 @@
 
 A 2-screen grocery app built with React Native, Expo, and TypeScript. Browse products from DummyJSON, add items to a cart, and review the bill with delivery fee logic.
 
+## Demo Video
+
+[Watch the app walkthrough](https://drive.google.com/file/d/1R_StGtPvLr-59u2iYdQghcvw3ONuRuFN/view?usp=drivesdk)
+
 ## Features
 
 - **Product Listing** — fetches groceries from DummyJSON, 2-column grid, add / quantity stepper, floating cart bar
